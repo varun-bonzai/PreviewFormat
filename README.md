@@ -1,2 +1,0 @@
-# PreviewFormat
-Test Preview format
