@@ -1,3 +1,5 @@
+const URLParse = require('url-parse');
+
 const data = {
   "eerr-dfdfdf":{
     url:"https://www.news.com.au",
@@ -43,7 +45,18 @@ let getWebsiteURLById = (id) => {
 }
 
 let createValidSiteURL = (url,port) =>{
-   let finUrl = 'https://' + url + ':' + port;
+  if(url.indexOf('http') == -1){
+    url = 'https://' + url;
+  }
+  let parseDetails = URLParse(url,true);
+  console.log(parseDetails);
+  let finUrl = parseDetails.origin + ':' + port;
+  if(parseDetails.protocol == ''){
+      finUrl = 'https://' + finUrl;
+  }
+  if(parseDetails.pathname != ''){
+    finUrl = finUrl + parseDetails.pathname;
+  }
    return finUrl;
 }
 

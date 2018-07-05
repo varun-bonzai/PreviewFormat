@@ -12,9 +12,13 @@ const decoder = new StringDecoder('utf8');
 const replaceall = require("replaceall");
 const utf8 = require('utf8');
 const axios = require('axios-https-proxy-fix');
+const URLParse = require('url-parse');
+
 const url = "https://www.lifehacker.com:443 "
 
 let hackFile = require('./libs/hackfile');
+let relativeHTML = require('./libs/relativeHTML');
+
 let pubs = require('./constant/websites');
 const proxy = {
   host: 'localhost',
@@ -60,15 +64,17 @@ app.get('/site/:siteurl',async (req, res, next) =>{
   let url = Buffer.from(req.params.siteurl, 'base64').toString();
   let port = 443;
   url = pubs.createValidSiteURL(url,port);
-  console.log("test");
+  let baseURl = req.protocol + '://' + req.get('host') + '/site/';
   let result = await proxyCall(url);
-  await writeProxyResponse(result,res);
+  await writeProxyResponse(result,res,false,relativeHTML.convertURLsToAbs.bind(this,baseURl,URLParse(url, true).origin));
 });
 
 app.get('/hackfile/:siteurl',async (req, res, next) =>{
     let url = Buffer.from(req.params.siteurl, 'base64').toString();
+
     let port = 443;
     url = pubs.createValidSiteURL(url,port);
+
     //let url = pubs.getWebsiteURLById(siteId);
     let hackFilePath = hackFile(url);
 
@@ -116,7 +122,7 @@ var proxyCall = async function(url){
   return result;
 };
 
-var writeProxyResponse = async function(result,res,flgEnd){
+var writeProxyResponse = async function(result,res,flgEnd,cbProcessData){
   if(result && result.status == 200){
     if(result.headers){
       for(var key in result.headers){
@@ -124,6 +130,10 @@ var writeProxyResponse = async function(result,res,flgEnd){
           res.setHeader(key, result.headers[key])
         }
       }
+    }
+    //console.log(result.data);
+    if(cbProcessData){
+      result.data = cbProcessData(result.data);
     }
     res.write(result.data);
     if(!flgEnd){

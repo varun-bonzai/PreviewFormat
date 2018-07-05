@@ -4,17 +4,20 @@
   "description": "Service for output of preview",
   "main": "index.js",
   "scripts": {
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "start": "node index.js & node anyproxy/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google/maps": "^0.4.6",
+    "absolutify": "^0.1.0",
     "ag-psd": "^1.2.2",
     "anyproxy": "^4.0.10",
     "axios": "^0.18.0",
     "axios-https-proxy-fix": "^0.17.1",
     "btoa": "^1.2.1",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.3",
     "fs-extra": "^6.0.1",
     "http-proxy-rules": "^1.1.3",
@@ -25,6 +28,7 @@
     "semaphore": "^1.1.0",
     "server-destroy-vvo": "^1.0.1",
     "swat-proxy": "^1.1.0",
+    "url-parse": "^1.4.1",
     "utf8": "^3.0.0"
   },
   "devDependencies": {
