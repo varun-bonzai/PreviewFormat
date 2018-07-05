@@ -1,10 +1,11 @@
+"use strict"
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
 //let render = require('./render/render').render;
 let path = require('path');
-let public = path.join(__dirname, 'public');
+let publiq = path.join(__dirname, 'public');
 //const axios = require('axios');
 let StringDecoder = require('string_decoder').StringDecoder;
 const decoder = new StringDecoder('utf8');
@@ -17,15 +18,15 @@ let hackFile = require('./libs/hackfile');
 let pubs = require('./constant/websites');
 const proxy = {
   host: 'localhost',
-  port: 8001,
+  port: 8003,
 };
 
 const securityHeaders = ["content-security-policy","x-content-type-options","x-content-security-policy","x-webkit-csp","x-frame-options"];
 
-const port = 3000;
+const port = 3001;
 const app = express();
 
-app.use('/static', express.static(public));
+app.use('/static', express.static(publiq));
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect

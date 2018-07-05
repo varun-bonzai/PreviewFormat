@@ -5,7 +5,7 @@ const exec = require('child_process').exec;
 
 let createServer = () => {
   const options = {
-    port: 8001,
+    port: 8003,
     rule: require('./myRule'),
     webInterface: {
       enable: true,
