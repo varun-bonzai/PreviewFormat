@@ -62,7 +62,7 @@ app.get('/pubs',async (req, res, next) =>{
 });
 
 app.get('/site/:siteurl',async (req, res, next) =>{
-  console.log(req.headers);
+  //console.log(req.headers);
   let url = Buffer.from(req.params.siteurl, 'base64').toString();
   let port = 443;
   url = pubs.createValidSiteURL(url,port);
@@ -76,7 +76,7 @@ app.get('/site/:siteurl',async (req, res, next) =>{
 });
 
 app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
-  console.log('212121');
+  //console.log('212121');
     let url = Buffer.from(req.params.siteurl, 'base64').toString();
     let hackPath = Buffer.from(req.params.hp, 'base64').toString();
     let format = req.params.fm;
@@ -85,7 +85,7 @@ app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
 
     //let url = pubs.getWebsiteURLById(siteId);
     let hackFilePath = hackPath == 'use'?hackFile(url,format):[hackPath];
-    console.log(hackFilePath,url);
+    //console.log(hackFilePath,url);
     if(hackFilePath && hackFilePath.length > 0){
       //for(var i=0;i<1;i++){
         let result = await proxyCall(hackFilePath[0],req.headers['user-agent'],true);
