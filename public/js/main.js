@@ -8,7 +8,7 @@ let getParamFromQueryStr =(paramName) =>{
      var i = q.split('=');
      queries[i[0].toString()] = i[1].toString();
    });
-   console.log(queries);
+   //console.log(queries);
    return queries[paramName];
 }
 
@@ -44,12 +44,11 @@ window.onload = function(){
 
 
 let render = (contentWindow) => {
-  console.log(contentWindow.domain,"test");
     /*var height = contentWindow.document.body.clientHeight;
     var wi = contentWindow.top;
     wi.document.body.style.height = 1080 + 'px';*/
    //contentWindow.document.querySelector("html").style.height = "";
-  var css = 'html { height: auto !important; }',
+  /*var css = 'html { height: auto !important; }',
         head = contentWindow.document.head || contentWindow.document.getElementsByTagName('head')[0],
         style = contentWindow.document.createElement('style');
 
@@ -59,26 +58,36 @@ let render = (contentWindow) => {
         } else {
             style.appendChild(contentWindow.document.createTextNode(css));
         }
-        head.appendChild(style);
+        head.appendChild(style);*/
 
-  let adBlock = contentWindow.document.body.querySelector('#ad-out-of-page') || contentWindow.document.body.querySelector('.ad-block.ad-custom.ad-custom-desktop'), adAppendContainer = contentWindow.document.body;
-  if(adBlock) {
-      adBlock.style.display = 'block';
-      adBlock.innerHTML = '';
-      adAppendContainer = adBlock;
+  let adContainer = getParamFromQueryStr('cont') ||  'ad-out-of-page';
+  let adBlock = contentWindow.document.body.querySelector('#' + adContainer), adAppendContainer = contentWindow.document.body;
+  if(!adBlock){
+    adBlock = contentWindow.document.body.querySelector('.' + adContainer)
   }
-  addScriptForTag(contentWindow,adAppendContainer);
+  setTimeout(function(){
+    if(adBlock) {
+        adBlock.style.display = 'block';
+        adBlock.innerHTML = '';
+        adAppendContainer = adBlock;
+    }
+    addScriptForTag(contentWindow,adAppendContainer);
+  },2000);
 }
 
 let addScriptForTag = (contentWindow,parentCont) => {
-  let adId = getParamFromQueryStr('adid') || '2669677243842780539'
+  let en = getParamFromQueryStr('en') || 'prod';
+  let hackPath = getParamFromQueryStr('hp') || 'use';
+  let adId = getParamFromQueryStr('adid') || '2669677243842780539';
+  let format = getParamFromQueryStr('fm') || 'MTS';
+  let invokeURL = en == "staging"?'i.bonzai.co/mizu/invoke.do':'invoke.bonzai.co/mizu/invoke.do'
   let div = contentWindow.document.createElement('div');
   div.className = "bonzai-wrap"
   parentCont.appendChild(div);
   let cacheBuster = 'CACHEBUSTER';
   let bonzai_adid = adId;
   let bonzai_sn = 'DFP';
-  let bonzai_data = '{"network":{"keyId":"DFP","name":"DFP","settings":{"pubHackPath":"/hackfile/' + btoa(siteURL)+'","isPreview":"false","env":"wap","tagType":"noniFrame","iFrmBust":"N","proto":"agnostic","trackerFireOn":"Clickthrough","zIndex":"23000"},"macros":{"addiTr":{"cachbust":"%%CACHEBUSTER%%","segId":""},"clkTr":{"img":["%%CLICK_URL_UNESC%%"],"scr":[]},"rendTr":{"img":[],"scr":[]},"engmTr":{},"imprTr":{"img":["%%VIEW_URL_UNESC%%"],"scr":[]}}}}';
+  let bonzai_data = '{"network":{"keyId":"DFP","name":"DFP","settings":{"pubHackPath":"'+window.origin +'/hackfile/' + btoa(siteURL)+'/'+btoa(hackPath)+'/' + format + '","isPreview":"false","env":"wap","tagType":"noniFrame","iFrmBust":"Y","proto":"agnostic","trackerFireOn":"Clickthrough"},"macros":{"addiTr":{"cachbust":"%%CACHEBUSTER%%","segId":""},"clkTr":{"img":["%%CLICK_URL_UNESC%%"],"scr":[]},"rendTr":{"img":[],"scr":[]},"engmTr":{},"imprTr":{"img":["%%VIEW_URL_UNESC%%"],"scr":[]}}}}';
   let protocol = contentWindow.location && contentWindow.location.protocol;
    protocol = (protocol === 'http:' || protocol === 'https:') ? protocol.replace(':', '') : 'https';
 
@@ -87,7 +96,7 @@ let addScriptForTag = (contentWindow,parentCont) => {
   script.id = 'bonzai_script_' + index;
   if(!contentWindow.bonzaiObj || (typeof contentWindow.bonzaiObj == 'undefined')) {contentWindow.bonzaiObj = {};}
   contentWindow.bonzaiObj[script.id] = bonzai_data;
-  script.src = protocol + '://i.bonzai.co/mizu/invoke.do?proto=' + protocol + '&adid='+bonzai_adid+'&scriptid=' + script.id +'&sn='+bonzai_sn+'&contTyp=div' +'&plid=2669269004012503123'  + '&rnd=' + cacheBuster;
+  script.src = protocol + '://' + invokeURL + '?proto=' + protocol + '&adid='+bonzai_adid+'&scriptid=' + script.id +'&sn='+bonzai_sn+'&contTyp=div' +'&plid=2669269004012503123'  + '&rnd=' + cacheBuster;
   //s.parentNode.insertBefore(script, s.nextSibling);
   div.appendChild(script);
 

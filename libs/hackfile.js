@@ -2,7 +2,8 @@ let urlParse = require('url').parse;
 
 const ASSET_CDN_URL = 'https://massets.bonzai.ad/';
 const PUB_HACK_FOLDER = 'c2/jd/';
-const AD_FORMAT = "desktop_truskin";
+const AD_FORMAT_DTS = "desktop_truskin";
+const AD_FORMAT_MTS = "mobile_truskin_full"
 
 
 let TLDs = [
@@ -51,17 +52,19 @@ function replaceProtoType(url) {
     return url.replace(/((http:\/\/))/g, "https://");
 }
 
-function getPublisherHackFilesWithRootDomain(url) {
+function getPublisherHackFilesWithRootDomain(url,format) {
+    let formtName = format != ""?format:'MTS';
+    let formatPath = formtName == "MTS"?AD_FORMAT_MTS:AD_FORMAT_DTS;
     var publisherFile = [];
     var file = "";
     var hostName = getHostName(url);
     var rootDomain = "";
-    file = ASSET_CDN_URL + PUB_HACK_FOLDER + AD_FORMAT + hostName + ".js";
+    file = ASSET_CDN_URL + PUB_HACK_FOLDER + formatPath + hostName + ".js";
     file = replaceProtoType(file);
     publisherFile.push(file);
     rootDomain = getRootDomain(hostName);
     if (rootDomain && rootDomain !== hostName) {
-        file = ASSET_CDN_URL + PUB_HACK_FOLDER + AD_FORMAT + rootDomain + ".js";
+        file = ASSET_CDN_URL + PUB_HACK_FOLDER + formatPath + rootDomain + ".js";
         file = replaceProtoType(file);
         publisherFile.push(file);
     }

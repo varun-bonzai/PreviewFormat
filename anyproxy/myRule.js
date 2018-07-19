@@ -21,10 +21,10 @@ let proxyRules = new HttpProxyRules(options);
 
 module.exports = {
   *beforeSendResponse(requestDetail, responseDetail) {
-    console.log(requestDetail.url);
+    //console.log(requestDetail.url);
     if (requestDetail.url.indexOf('desktop_truskin') != 11121) {
       const newResponse = responseDetail.response;
-      console.log(newResponse);
+      //console.log(newResponse);
       /*newResponse.body = '-- AnyProxy Hacked! --';
       return new Promise((resolve, reject) => {
         setTimeout(() => { // delay the response for 5s
@@ -58,10 +58,14 @@ module.exports = {
   *beforeSendRequest(requestDetail){
       let req = requestDetail._req;
       let target = proxyRules.match(req);
-      console.log(target,"test");
+
+      requestDetail.requestOptions.headers['User-Agent'] = 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Mobile Safari/537.36';
+      //console.log(target,"test");
+      //  console.log(req);
       if(target){
         let t = url.parse(target);
-        console.log(t);
+        //console.log(t);
+        //console.log(requestDetail.requestOptions);
         requestDetail.url = target;
         requestDetail.requestOptions.hostname = t.hostname;
         requestDetail.requestOptions.port = t.port;
@@ -76,17 +80,17 @@ module.exports = {
 
 let unzipandDecode = function(data){
   var zlib = require('zlib');
-  console.log(data,11);
+  //console.log(data,11);
   var textChunk = decoder.write(data);
-  console.log(textChunk,"err");
+  //console.log(textChunk,"err");
   return new Promise(function(resolve, reject) {
       zlib.gunzip(data, function(err, dezipped)
       {
-        console.log(err);
+        //console.log(err);
         //console.log(dezipped,"tesststs")
-        console.log(dezipped,"sasasa");
+        //console.log(dezipped,"sasasa");
         var textChunk = decoder.write(dezipped);
-        console.log(textChunk,"sasasa");
+        //console.log(textChunk,"sasasa");
         resolve(textChunk);
       });
   });

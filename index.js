@@ -18,6 +18,7 @@ const url = "https://www.lifehacker.com:443 "
 
 let hackFile = require('./libs/hackfile');
 let relativeHTML = require('./libs/relativeHTML');
+let adContainers = require('./libs/adContainers');
 
 let pubs = require('./constant/websites');
 const proxy = {
@@ -51,8 +52,8 @@ app.use(function (req, res, next) {
 });
 
 app.get('/',async (req, res, next) =>{
-   console.log("test");
-   console.log(req.query);
+   //console.log("test");
+   //console.log(req.query);
    res.send();
 });
 app.get('/pubs',async (req, res, next) =>{
@@ -61,29 +62,36 @@ app.get('/pubs',async (req, res, next) =>{
 });
 
 app.get('/site/:siteurl',async (req, res, next) =>{
+  console.log(req.headers);
   let url = Buffer.from(req.params.siteurl, 'base64').toString();
   let port = 443;
   url = pubs.createValidSiteURL(url,port);
   let baseURl = req.protocol + '://' + req.get('host') + '/site/';
-  let result = await proxyCall(url);
-  await writeProxyResponse(result,res,false,relativeHTML.convertURLsToAbs.bind(this,baseURl,URLParse(url, true).origin));
+  let result = await proxyCall(url,req.headers['user-agent'],false);
+  await writeProxyResponse(result,res,false,(html) =>{
+      let newhtml = relativeHTML.convertURLsToAbs(baseURl,URLParse(url, true).origin,html);
+      //console.log("Adconatienrs",adContainers.getAdContainers(html));
+      return newhtml;
+    });;
 });
 
-app.get('/hackfile/:siteurl',async (req, res, next) =>{
+app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
+  console.log('212121');
     let url = Buffer.from(req.params.siteurl, 'base64').toString();
-
+    let hackPath = Buffer.from(req.params.hp, 'base64').toString();
+    let format = req.params.fm;
     let port = 443;
     url = pubs.createValidSiteURL(url,port);
 
     //let url = pubs.getWebsiteURLById(siteId);
-    let hackFilePath = hackFile(url);
-
+    let hackFilePath = hackPath == 'use'?hackFile(url,format):[hackPath];
+    console.log(hackFilePath,url);
     if(hackFilePath && hackFilePath.length > 0){
-      for(var i=0;i<1;i++){
-        let result = await proxyCall(hackFilePath[i]);
+      //for(var i=0;i<1;i++){
+        let result = await proxyCall(hackFilePath[0],req.headers['user-agent'],true);
         result.data = await modifyScript(result.data);
         await writeProxyResponse(result,res);
-      }
+      //}
     }
 });
 
@@ -110,14 +118,23 @@ let decodeandZip = function(data){
   console.log("Server is running on "+ port +" port");
 });*/
 
-var proxyCall = async function(url){
+var proxyCall = async function(url,ua,isProxyRequired){
   /*const agent = new https.Agent({
     rejectUnauthorized: false
   });*/
 
-  var config = { proxy: { host: 'localhost', port: 8001 } }
+  var config = {
+                  headers: {
+  		                  'User-Agent': ua
+         }
+  }
+
+  if(isProxyRequired){
+      config['proxy'] = proxy;
+  }
+
   //const result = await axios.get(url, {httpsAgent: agent,proxy:proxy});
-  const result = await axios.get(url, {proxy:proxy});
+  const result = await axios.get(url, config);
   //console.log(result);
   return result;
 };
