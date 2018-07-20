@@ -47,8 +47,29 @@ app.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
+    //console.log(req.headers.referer);
+    //console.log(req.url,req.get('host'));
+
+
     // Pass to next layer of middleware
     next();
+});
+app.get('*',async (req, res, next) =>{
+  let flgIs = false;
+  if(req.url.indexOf('/site/') == -1 && req.url.indexOf('/hackfile/') == -1){
+    let baseUrl = req.protocol + '://' + req.get('host');
+    if(req.headers.referer.indexOf('site') != -1){
+        let siteId = req.headers.referer.replace(baseUrl + '/site/','');
+        let fileExt = req.url.replace(baseUrl + '/','');
+          flgIs = true;
+         await loadSiteContent(req,res,siteId, fileExt);
+    }
+  }
+
+  if(!flgIs){
+    next();
+  }
+
 });
 
 app.get('/',async (req, res, next) =>{
@@ -61,13 +82,27 @@ app.get('/pubs',async (req, res, next) =>{
   res.send(response);
 });
 
+let loadSiteContent = async (req,res,siteUrl,exFile) =>{
+    //console.log(siteUrl);
+    //console.log(req);
+    let url = Buffer.from(siteUrl, 'base64').toString();
+    let port = 443;
+    url = pubs.createValidSiteURL(url,port);
+    let baseURl = url + exFile;
+
+    //console.log(baseURl,"ewere");
+    let result = await proxyCall(baseURl,req,false);
+    await writeProxyResponse(result,res,false);
+};
+
 app.get('/site/:siteurl',async (req, res, next) =>{
   //console.log(req.headers);
+  //console.log(req);
   let url = Buffer.from(req.params.siteurl, 'base64').toString();
   let port = 443;
   url = pubs.createValidSiteURL(url,port);
   let baseURl = req.protocol + '://' + req.get('host') + '/site/';
-  let result = await proxyCall(url,req.headers['user-agent'],false);
+  let result = await proxyCall(url,req,false);
   await writeProxyResponse(result,res,false,(html) =>{
       let newhtml = relativeHTML.convertURLsToAbs(baseURl,URLParse(url, true).origin,html);
       //console.log("Adconatienrs",adContainers.getAdContainers(html));
@@ -76,7 +111,7 @@ app.get('/site/:siteurl',async (req, res, next) =>{
 });
 
 app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
-  //console.log('212121');
+    console.log('212121');
     let url = Buffer.from(req.params.siteurl, 'base64').toString();
     let hackPath = Buffer.from(req.params.hp, 'base64').toString();
     let format = req.params.fm;
@@ -88,7 +123,7 @@ app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
     //console.log(hackFilePath,url);
     if(hackFilePath && hackFilePath.length > 0){
       //for(var i=0;i<1;i++){
-        let result = await proxyCall(hackFilePath[0],req.headers['user-agent'],true);
+        let result = await proxyCall(hackFilePath[0],req,true);
         result.data = await modifyScript(result.data);
         await writeProxyResponse(result,res);
       //}
@@ -118,24 +153,22 @@ let decodeandZip = function(data){
   console.log("Server is running on "+ port +" port");
 });*/
 
-var proxyCall = async function(url,ua,isProxyRequired){
+var proxyCall = async function(url,req,isProxyRequired){
   /*const agent = new https.Agent({
     rejectUnauthorized: false
   });*/
-
   var config = {
                   headers: {
-  		                  'User-Agent': ua
+  		                  'User-Agent': req.headers['user-agent']
          }
   }
-
   if(isProxyRequired){
       config['proxy'] = proxy;
   }
 
   //const result = await axios.get(url, {httpsAgent: agent,proxy:proxy});
   const result = await axios.get(url, config);
-  //console.log(result);
+  //console.log(result.data);
   return result;
 };
 
