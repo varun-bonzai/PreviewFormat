@@ -80,7 +80,7 @@ let addScriptForTag = (contentWindow,parentCont) => {
   let hackPath = getParamFromQueryStr('hp') || 'use';
   let adId = getParamFromQueryStr('adid') || '2669677243842780539';
   let format = getParamFromQueryStr('fm') || 'MTS';
-  let invokeURL = en == "staging"?'i.bonzai.co/mizu/invoke.do':'invoke.bonzai.co/mizu/invoke.do'
+  let invokeURL =  (en == "dev")?"sites.bonzai.ad/mizuInternal/inv.php":(en == "staging" || en == "qa")?'i.bonzai.co/mizu/invoke.do':'invoke.bonzai.co/mizu/invoke.do'
   let div = contentWindow.document.createElement('div');
   div.className = "bonzai-wrap"
   parentCont.appendChild(div);

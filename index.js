@@ -58,7 +58,7 @@ app.get('*',async (req, res, next) =>{
   let flgIs = false;
   if(req.url.indexOf('/site/') == -1 && req.url.indexOf('/hackfile/') == -1){
     let baseUrl = req.protocol + '://' + req.get('host');
-    if(req.headers.referer.indexOf('site') != -1){
+    if(req.headers && req.headers.referer && req.headers.referer.indexOf('site') != -1){
         let siteId = req.headers.referer.replace(baseUrl + '/site/','');
         let fileExt = req.url.replace(baseUrl + '/','');
           flgIs = true;
