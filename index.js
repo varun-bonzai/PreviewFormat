@@ -133,6 +133,8 @@ app.get('/hackfile/:siteurl/:hp/:fm',async (req, res, next) =>{
 let modifyScript = function(script){
    //console.log(script,"test111");
    var result = replaceall("window.top", "window", script);
+   result = replaceall('closestAncestor: 2', "closestAncestor: 100", result);
+   result = replaceall('closestAncestor: 1', "closestAncestor: 100", result);
    result = replaceall('none', "block", result);
 
    return result;
