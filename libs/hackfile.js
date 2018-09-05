@@ -1,4 +1,5 @@
 let urlParse = require('url').parse;
+let utils = require('./utils');
 
 const ASSET_CDN_URL = 'https://massets.bonzai.ad/';
 const PUB_HACK_FOLDER = 'c2/jd/';
@@ -13,7 +14,7 @@ let TLDs = [
 function getHostName(url) {
     var hostName = null;
     try {
-        let t = urlParse(url);
+        let t = urlParse(utils.createValidSiteURL(url));
         hostName = t.hostname;
     } catch (e) {
         hostName = null;
@@ -58,6 +59,7 @@ function getPublisherHackFilesWithRootDomain(url,format) {
     var publisherFile = [];
     var file = "";
     var hostName = getHostName(url);
+
     var rootDomain = "";
     file = ASSET_CDN_URL + PUB_HACK_FOLDER + formatPath + hostName + ".js";
     file = replaceProtoType(file);

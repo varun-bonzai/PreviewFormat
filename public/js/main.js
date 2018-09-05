@@ -12,8 +12,6 @@ let getParamFromQueryStr =(paramName) =>{
    return queries[paramName];
 }
 
-
-
 window.onload = function(){
 
     siteURL = getParamFromQueryStr('url') || "www.news.com.au";
@@ -44,6 +42,7 @@ window.onload = function(){
 
 
 let render = (contentWindow) => {
+  
     /*var height = contentWindow.document.body.clientHeight;
     var wi = contentWindow.top;
     wi.document.body.style.height = 1080 + 'px';*/
@@ -87,7 +86,7 @@ let addScriptForTag = (contentWindow,parentCont) => {
   let cacheBuster = 'CACHEBUSTER';
   let bonzai_adid = adId;
   let bonzai_sn = 'DFP';
-  let bonzai_data = '{"network":{"keyId":"DFP","name":"DFP","settings":{"pubHackPath":"'+window.origin +'/hackfile/' + btoa(siteURL)+'/'+btoa(hackPath)+'/' + format + '","isPreview":"false","env":"wap","tagType":"noniFrame","iFrmBust":"N","proto":"agnostic","trackerFireOn":"Clickthrough"},"macros":{"addiTr":{"cachbust":"%%CACHEBUSTER%%","segId":""},"clkTr":{"img":["%%CLICK_URL_UNESC%%"],"scr":[]},"rendTr":{"img":[],"scr":[]},"engmTr":{},"imprTr":{"img":["%%VIEW_URL_UNESC%%"],"scr":[]}}}}';
+  let bonzai_data = '{"network":{"keyId":"DFP","name":"DFP","settings":{"pubHackPath":"'+window.origin +'/hackfile/' + btoa(siteURL)+'/'+btoa(hackPath)+'/' + format + '","isPreview":"false","env":"wap","tagType":"noniFrame","iFrmBust":"N","proto":"agnostic","trackerFireOn":"Clickthrough","zIndex":"23000"},"macros":{"addiTr":{"cachbust":"%%CACHEBUSTER%%","segId":""},"clkTr":{"img":[],"scr":[]},"rendTr":{"img":[],"scr":[]},"engmTr":{},"imprTr":{"img":[],"scr":[]}}}}';
   let protocol = contentWindow.location && contentWindow.location.protocol;
    protocol = (protocol === 'http:' || protocol === 'https:') ? protocol.replace(':', '') : 'https';
 
